@@ -62,7 +62,7 @@ const storage = multer.diskStorage({
 
 
 // Project Details Submission by User
-router.post('/submitsp', upload.single('files', 20), (req, res) => {
+router.post('/submitsp', upload.array('files', 20), (req, res) => {
  var val = JSON.stringify(req.body.files);
   const newProject = new Project({
     _id: new mongoose.Types.ObjectId(),
