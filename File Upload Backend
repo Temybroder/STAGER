@@ -1,0 +1,85 @@
+
+const express = require('express');
+const router = express.Router();
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema; 
+const passport = require('passport');
+const JWT = require('jsonwebtoken');
+const nodemailer = require('nodemailer');
+const User = require('../models/User');
+const Token = require('../models/Token');
+let Project =  require('../models/Project');
+const sendEmail = require('../utils/email/sendEmail');
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+
+const JWTSecret = 
+const bcryptSalt = '10';
+const clientURL = '';
+
+let db = require('../config/keys')
+
+const { ensureAuthenticated, forwardAuthenticated } = require('../config/auth');
+
+
+const fs = require('fs'); 
+const path = require('path'); 
+const multer = require('multer'); 
+const storage = multer.diskStorage({ 
+  destination: (req, file, cb) => { 
+    cb(null, './uploads/') 
+  }, 
+  filename: (req, file, cb) => { 
+    cb(null, file.originalname) 
+  } 
+ }); 
+ const upload = multer({ storage: storage,
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype == "image/jpg" || file.mimetype == "image/png" || file.mimetype == "image/jpeg") {
+      cb(null, true);
+    } else {
+      cb(null, false);
+      return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
+    }},
+  limits: { fileSize: 1 * 1024 * 1024, files: 21 }
+ })
+
+//const storage = multer.diskStorage({
+//destination: (req, file, cb) => {
+//    cb(null, './uploads')
+//  },
+//  filename: (req, file, cb) => {
+//    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9)
+//    cb(null, uniqueSuffix + Date.now() + path.extname(file.originalname))
+//  },
+//})
+//const upload = multer({ storage })
+
+
+
+
+              // TEST ROUTES
+
+
+// Project Details Submission by User
+router.post('/submitsp', upload.single('files', 20), (req, res) => {
+ var val = JSON.stringify(req.body.files);
+  const newProject = new Project({
+    _id: new mongoose.Types.ObjectId(),
+    proj_type : "Company_Registration",
+    name : 'Perfectly New Trial Upload',
+    img: req.files.map((file) => {
+      let prep = file.path
+      return{
+      path: prep
+        }
+    })
+   });
+   newProject
+   .save()
+   .then(project => {
+     var message = "Successfully Submitted";
+         res.status(200).json({message, val})
+        })
+    .catch(err => res.status(400).json('Error Occured'))
+});
